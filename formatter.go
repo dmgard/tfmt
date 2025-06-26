@@ -31,6 +31,7 @@ type Formatter struct {
 	FloatFmt  byte
 	FloatPrec int
 	tab       int
+	space int
 	ifs       []int // record of positions to rewind to if a call to "fi" is encountered with false
 
 	pos int // last printed location
@@ -243,27 +244,65 @@ func (f *Formatter) Tab() *Formatter {
 }
 
 func (f *Formatter) Indent() *Formatter {
-	f.tab++
-
-	if f.tab > len(tabsS) {
-		f.tab = len(tabsS)
-		return f
-	}
-
-	return f.Tab()
+	return f.IndentTabs(1)
 }
 
 func (f *Formatter) Outdent() *Formatter {
-	f.tab--
+	return f.OutdentTabs(1)
+}
 
-	if f.tab < 0 {
-		f.tab = 0
+func (f *Formatter) IndentTabs(n int) *Formatter {
+	f.tab = max(f.tab+n, 0)
+	return f.Tabs(n)
+}
+
+func (f *Formatter) OutdentTabs(n int) *Formatter {
+	f.tab = max(f.tab-n, 0)
+	return f.TrimRightCopiesN("\t", n)
+}
+
+func (f *Formatter) TrimRightCopiesN(s string, n int) *Formatter {
+	for pos := len(f.buf) - len(s);
+		n > 0 && pos >= 0 && string(f.buf[pos:]) == s;
+	pos, n = len(f.buf)-len(s), n-1 {
+		f.pos -= len(s)
+		f.buf = f.buf[:pos]
 	}
 	return f
 }
 
+func (f *Formatter) IndentSpaces(n int) *Formatter {
+	f.space = max(f.space+n, 0)
+	return f.Spaces(n)
+}
+
+func (f *Formatter) OutdentSpaces(n int) *Formatter {
+	f.space = max(f.space-n, 0)
+	return f.TrimRightCopiesN(" ", n)
+}
+
+const spaces = "                                                "
+
+func (f *Formatter) Spaces(n int) *Formatter {
+	for n > len(spaces) {
+		f.Str(spaces)
+		n -= len(spaces)
+	}
+	f.Str(spaces[:n])
+	return f
+}
+
+func (f *Formatter) Tabs(n int) *Formatter {
+	for n > len(tabsS) {
+		f.Str(tabsS)
+		n -= len(tabsS)
+	}
+	f.Str(tabsS[:n])
+	return f
+}
+
 func (f *Formatter) putIndent() *Formatter {
-	return f.Str(tabsS[:f.tab])
+	return f.Str(tabsS[:f.tab]).Spaces(f.space)
 }
 
 // Ln TODO optionally take a number of lines
