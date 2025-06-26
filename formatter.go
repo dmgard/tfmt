@@ -482,3 +482,7 @@ func (f *Formatter) Fi(b bool) *Formatter {
 func (f *Formatter) Intf(i int, base int) *Formatter {
 	return f.Str(strconv.FormatInt(int64(i), base))
 }
+
+func (f *Formatter) Reset() {
+	f.Rewind(0)
+}
