@@ -266,6 +266,7 @@ func (f *Formatter) putIndent() *Formatter {
 	return f.Str(tabsS[:f.tab])
 }
 
+// Ln TODO optionally take a number of lines
 func (f *Formatter) Ln() *Formatter {
 	f.buf = append(f.buf, []byte("\n")...)
 	return f.putIndent()
