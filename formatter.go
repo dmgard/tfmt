@@ -343,7 +343,12 @@ func (f *Formatter) Uint(a uint) *Formatter {
 }
 
 func (f *Formatter) Rune(a rune) *Formatter {
-	return f.I32(a)
+	return f.Str(string(a))
+}
+
+func (f *Formatter) RuneQuote(a rune) *Formatter {
+	f.buf = strconv.AppendQuoteRune(f.buf, a)
+	return f
 }
 
 func (f *Formatter) validateFloatParams() {
