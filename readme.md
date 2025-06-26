@@ -31,6 +31,8 @@ f.Str("type someType struct {").Indent().Ln().
 	Str("field2 type2").Ln().
 	Str("field3 type3")
 f.OutdentLn().Str("}")
+
+fmt.Println(f.String())
 ```
 
 prints
