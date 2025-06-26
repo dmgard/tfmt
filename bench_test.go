@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"testing"
 
-	"github.com/uber-go/zap"
+	"go.uber.org/zap"
 )
 
 func BenchmarkStdLog(b *testing.B) {
@@ -24,9 +24,12 @@ func BenchmarkWrite1Int(b *testing.B) {
 }
 
 func BenchmarkZap1Int(b *testing.B) {
-	l := zap.New(zap.NewJSONEncoder())
+	l, err := zap.NewProduction()
+	if err != nil {
+		b.Fatal(err)
+	}
 	b.ResetTimer()
-
+	
 	for n := 0; n < b.N; n++ {
 		l.Debug("test", zap.Int("test", 23))
 	}
@@ -53,9 +56,12 @@ func BenchmarkWrite10Int(b *testing.B) {
 }
 
 func BenchmarkZap10Int(b *testing.B) {
-	l := zap.New(zap.NewJSONEncoder())
+	l, err := zap.NewProduction()
+	if err != nil {
+		b.Fatal(err)
+	}
 	b.ResetTimer()
-
+	
 	for n := 0; n < b.N; n++ {
 		l.Debug("test", zap.Int("test", 23), zap.Int("test", 23), zap.Int("test", 23), zap.Int("test", 23), zap.Int("test", 23), zap.Int("test", 23), zap.Int("test", 23), zap.Int("test", 23), zap.Int("test", 23), zap.Int("test", 23))
 	}
@@ -70,9 +76,12 @@ func BenchmarkFmt10Int(b *testing.B) {
 }
 
 func BenchmarkZap3Strings(b *testing.B) {
-	l := zap.New(zap.NewJSONEncoder())
+	l, err := zap.NewProduction()
+	if err != nil {
+		b.Fatal(err)
+	}
 	b.ResetTimer()
-
+	
 	for n := 0; n < b.N; n++ {
 		l.Debug("test", zap.String("test", "test"))
 	}
