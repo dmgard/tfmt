@@ -302,7 +302,7 @@ func (f *Formatter) Tabs(n int) *Formatter {
 }
 
 func (f *Formatter) putIndent() *Formatter {
-	return f.Str(tabsS[:f.tab]).Spaces(f.space)
+	return f.Tabs(f.tab).Spaces(f.space)
 }
 
 // Ln TODO optionally take a number of lines
