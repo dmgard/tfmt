@@ -3,6 +3,8 @@ package csl
 import (
 	"bytes"
 	"strconv"
+	
+	"golang.org/x/exp/constraints"
 )
 
 var tabsS = "\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t"
@@ -290,6 +292,10 @@ func (f *Formatter) Spaces(n int) *Formatter {
 	}
 	f.Str(spaces[:n])
 	return f
+}
+
+func Tabs[I constraints.Integer](n I) string {
+	return (&Formatter{}).Tabs(int(n)).String()
 }
 
 func (f *Formatter) Tabs(n int) *Formatter {
