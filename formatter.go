@@ -1,9 +1,10 @@
-package csl
+package tfmt
 
 import (
 	"bytes"
+	"fmt"
 	"strconv"
-	
+
 	"golang.org/x/exp/constraints"
 )
 
@@ -33,7 +34,7 @@ type Formatter struct {
 	FloatFmt  byte
 	FloatPrec int
 	tab       int
-	space int
+	space     int
 	ifs       []int // record of positions to rewind to if a call to "fi" is encountered with false
 
 	pos int // last printed location
@@ -74,7 +75,7 @@ func (f *Formatter) Clear() *Formatter {
 }
 
 func (f *Formatter) Free() {
-	f.buf = nil
+	*f = Formatter{}
 }
 
 func (f Formatter) String() string {
@@ -149,6 +150,7 @@ func (f *Formatter) Rewind(to int) *Formatter {
 }
 
 // TODO Go's builtin strcmp has gotta be orders of magnitude faster than this - if string([]byte) is done without allocations it's a no brainer
+
 func (f *Formatter) ReplaceIfDiff(fm Fmter) bool {
 	src := f.buf
 
@@ -180,8 +182,8 @@ func (f *Formatter) Str(a string) *Formatter {
 	return f
 }
 
-func (f *Formatter) Printf(fmt string, a ...interface{}) *Formatter {
-	return f.Str(Sprintf(fmt, a...))
+func (f *Formatter) Printf(fm string, a ...interface{}) *Formatter {
+	return f.Str(fmt.Sprintf(fm, a...))
 }
 
 func (f *Formatter) Len() int {
@@ -264,9 +266,7 @@ func (f *Formatter) OutdentTabs(n int) *Formatter {
 }
 
 func (f *Formatter) TrimRightCopiesN(s string, n int) *Formatter {
-	for pos := len(f.buf) - len(s);
-		n > 0 && pos >= 0 && string(f.buf[pos:]) == s;
-	pos, n = len(f.buf)-len(s), n-1 {
+	for pos := len(f.buf) - len(s); n > 0 && pos >= 0 && string(f.buf[pos:]) == s; pos, n = len(f.buf)-len(s), n-1 {
 		f.pos -= len(s)
 		f.buf = f.buf[:pos]
 	}
@@ -368,7 +368,7 @@ func (f *Formatter) U16(a uint16) *Formatter {
 	return f
 }
 
-func (f *Formatter) Stringer(a Stringer) *Formatter {
+func (f *Formatter) Stringer(a fmt.Stringer) *Formatter {
 	return f.Str(a.String())
 }
 
